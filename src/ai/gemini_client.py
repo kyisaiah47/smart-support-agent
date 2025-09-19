@@ -1,6 +1,6 @@
 import vertexai
-from vertexai.preview.generative_models import GenerativeModel
-from vertexai.preview.language_models import TextEmbeddingModel
+from vertexai.generative_models import GenerativeModel
+from vertexai.language_models import TextEmbeddingModel
 from typing import List, Dict, Any
 import json
 from ..config import Config

@@ -1,3 +1,3 @@
-from .gemini_client import GeminiClient
+from .gemini_mock import GeminiClient
 
 __all__ = ["GeminiClient"]
