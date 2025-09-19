@@ -3,8 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CloudFlow Support Chat</title>
+    <title>CloudFlow AI Support</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-primary: #fafafa;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f4f4f5;
+            --border-primary: #e4e4e7;
+            --border-secondary: #d4d4d8;
+            --text-primary: #09090b;
+            --text-secondary: #71717a;
+            --text-tertiary: #a1a1aa;
+            --accent-primary: #5b6ad8;
+            --accent-hover: #4c5bc7;
+            --accent-bg: #f0f2ff;
+            --success: #16a34a;
+            --warning: #ea580c;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -12,185 +37,366 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .chat-container {
-            width: 90%;
-            max-width: 800px;
-            height: 90vh;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
+            font-size: 14px;
+            line-height: 1.5;
             overflow: hidden;
         }
 
-        .chat-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .app-container {
+            height: 100vh;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            grid-template-rows: 60px 1fr;
+            grid-template-areas:
+                "sidebar header"
+                "sidebar main";
+        }
+
+        .app-header {
+            grid-area: header;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+        }
+
+        .header-title {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .sidebar {
+            grid-area: sidebar;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-primary);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-hover));
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: white;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .chat-header h1 {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-
-        .chat-header p {
-            opacity: 0.9;
+            font-weight: 700;
             font-size: 14px;
+        }
+
+        .sidebar-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .sidebar-section {
+            margin-bottom: 24px;
+        }
+
+        .sidebar-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .sidebar-item {
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 2px;
+        }
+
+        .sidebar-item:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .sidebar-item.active {
+            background: var(--accent-bg);
+            color: var(--accent-primary);
+            font-weight: 500;
+        }
+
+        .chat-container {
+            grid-area: main;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background: var(--bg-secondary);
         }
 
         .chat-messages {
             flex: 1;
-            padding: 20px;
             overflow-y: auto;
-            background: #f8f9fa;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
 
         .message {
-            margin-bottom: 20px;
             display: flex;
-            align-items: flex-start;
+            gap: 12px;
+            max-width: 100%;
         }
 
         .message.user {
-            justify-content: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .message.user .message-avatar {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        .message.assistant .message-avatar {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
         }
 
         .message-content {
-            max-width: 70%;
-            padding: 12px 18px;
-            border-radius: 18px;
+            flex: 1;
+            max-width: calc(100% - 44px);
+        }
+
+        .message-bubble {
+            padding: 12px 16px;
+            border-radius: var(--radius-lg);
+            word-wrap: break-word;
             position: relative;
         }
 
-        .message.user .message-content {
-            background: #667eea;
+        .message.user .message-bubble {
+            background: var(--accent-primary);
             color: white;
-            border-bottom-right-radius: 4px;
+            margin-left: auto;
+            max-width: 80%;
         }
 
-        .message.assistant .message-content {
-            background: white;
-            color: #333;
-            border: 1px solid #e0e0e0;
-            border-bottom-left-radius: 4px;
+        .message.assistant .message-bubble {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            max-width: 90%;
         }
 
         .message-meta {
-            font-size: 12px;
-            opacity: 0.7;
-            margin-top: 5px;
+            font-size: 11px;
+            color: var(--text-tertiary);
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .confidence-badge {
+            background: var(--success);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        .confidence-badge.medium {
+            background: var(--warning);
+        }
+
+        .confidence-badge.low {
+            background: var(--text-tertiary);
         }
 
         .suggestions {
-            margin-top: 10px;
+            margin-top: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
         }
 
         .suggestion-chip {
-            display: inline-block;
-            background: #e3f2fd;
-            color: #1976d2;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            color: var(--text-secondary);
             padding: 6px 12px;
-            border-radius: 16px;
+            border-radius: var(--radius-md);
             font-size: 12px;
-            margin: 2px;
             cursor: pointer;
-            border: 1px solid #bbdefb;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
         }
 
         .suggestion-chip:hover {
-            background: #1976d2;
-            color: white;
+            background: var(--accent-bg);
+            color: var(--accent-primary);
+            border-color: var(--accent-primary);
         }
 
         .sources {
-            margin-top: 10px;
+            margin-top: 12px;
+            padding: 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-md);
             font-size: 11px;
-            opacity: 0.8;
+        }
+
+        .sources-title {
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
         }
 
         .source-item {
-            background: #f0f0f0;
-            padding: 4px 8px;
-            border-radius: 8px;
-            margin: 2px 0;
-            display: block;
+            padding: 4px 0;
+            color: var(--text-tertiary);
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .source-item:last-child {
+            border-bottom: none;
         }
 
         .chat-input-container {
-            padding: 20px;
-            background: white;
-            border-top: 1px solid #e0e0e0;
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-primary);
+            background: var(--bg-secondary);
         }
 
         .chat-input {
             display: flex;
-            gap: 10px;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            position: relative;
         }
 
         .chat-input input {
-            flex: 1;
-            padding: 12px 18px;
-            border: 2px solid #e0e0e0;
-            border-radius: 25px;
-            font-size: 16px;
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-lg);
+            font-size: 14px;
+            font-family: inherit;
             outline: none;
-            transition: border-color 0.2s;
+            transition: all 0.2s ease;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
         }
 
         .chat-input input:focus {
-            border-color: #667eea;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(91, 106, 216, 0.1);
         }
 
-        .chat-input button {
-            background: #667eea;
+        .chat-input input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .send-button {
+            background: var(--accent-primary);
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 25px;
+            padding: 12px 20px;
+            border-radius: var(--radius-lg);
             cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.2s;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .chat-input button:hover:not(:disabled) {
-            background: #5a6fd8;
+        .send-button:hover:not(:disabled) {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
         }
 
-        .chat-input button:disabled {
-            background: #ccc;
+        .send-button:disabled {
+            background: var(--text-tertiary);
             cursor: not-allowed;
+            transform: none;
         }
 
         .typing-indicator {
             display: none;
+            padding: 12px 24px;
+            color: var(--text-secondary);
+            font-size: 12px;
             align-items: center;
             gap: 8px;
-            font-style: italic;
-            color: #666;
-            margin-bottom: 10px;
         }
 
         .typing-dots {
             display: flex;
-            gap: 2px;
+            gap: 3px;
         }
 
         .typing-dot {
-            width: 6px;
-            height: 6px;
-            background: #666;
+            width: 4px;
+            height: 4px;
+            background: var(--text-tertiary);
             border-radius: 50%;
             animation: typing 1.4s infinite;
         }
@@ -199,111 +405,200 @@
         .typing-dot:nth-child(3) { animation-delay: 0.4s; }
 
         @keyframes typing {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-10px); }
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-6px); opacity: 1; }
         }
 
-        .welcome-message {
+        .welcome-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
             text-align: center;
-            color: #666;
-            margin: 40px 0;
+            padding: 48px 24px;
+        }
+
+        .welcome-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--accent-bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            font-size: 24px;
+        }
+
+        .welcome-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .welcome-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            max-width: 400px;
         }
 
         .quick-suggestions {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 12px;
+            max-width: 600px;
+            width: 100%;
         }
 
         .quick-suggestion {
-            background: white;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            padding: 15px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-lg);
+            padding: 16px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
             text-align: left;
         }
 
         .quick-suggestion:hover {
-            border-color: #667eea;
-            background: #f8f9ff;
+            border-color: var(--accent-primary);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
         }
 
-        .quick-suggestion h4 {
-            color: #333;
-            margin-bottom: 5px;
-            font-size: 14px;
+        .suggestion-icon {
+            font-size: 20px;
+            margin-bottom: 8px;
         }
 
-        .quick-suggestion p {
-            color: #666;
+        .suggestion-title {
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .suggestion-desc {
             font-size: 12px;
+            color: var(--text-secondary);
         }
 
-        @media (max-width: 600px) {
-            .quick-suggestions {
+        @media (max-width: 768px) {
+            .app-container {
                 grid-template-columns: 1fr;
+                grid-template-areas:
+                    "header"
+                    "main";
             }
 
-            .message-content {
-                max-width: 85%;
+            .sidebar {
+                display: none;
+            }
+
+            .quick-suggestions {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
-    <div class="chat-container">
-        <div class="chat-header">
-            <h1>CloudFlow Support</h1>
-            <p>AI-powered customer support • Ask me anything!</p>
-        </div>
-
-        <div class="chat-messages" id="messages">
-            <div class="welcome-message">
-                <h3>👋 Welcome to CloudFlow Support!</h3>
-                <p>I'm here to help you with any questions about your account, billing, features, or technical issues.</p>
-
-                <div class="quick-suggestions">
-                    <div class="quick-suggestion" onclick="sendMessage('How do I reset my password?')">
-                        <h4>🔑 Password Reset</h4>
-                        <p>Get help with login issues</p>
-                    </div>
-                    <div class="quick-suggestion" onclick="sendMessage('Why was I charged twice this month?')">
-                        <h4>💳 Billing Questions</h4>
-                        <p>Understand your charges</p>
-                    </div>
-                    <div class="quick-suggestion" onclick="sendMessage('How can I integrate with Slack?')">
-                        <h4>🔗 Integrations</h4>
-                        <p>Connect your tools</p>
-                    </div>
-                    <div class="quick-suggestion" onclick="sendMessage('My dashboard is loading slowly')">
-                        <h4>🐌 Performance Issues</h4>
-                        <p>Troubleshoot problems</p>
-                    </div>
+    <div class="app-container">
+        <div class="app-header">
+            <div class="header-title">CloudFlow AI Support</div>
+            <div class="header-actions">
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span>AI Online</span>
                 </div>
             </div>
         </div>
 
-        <div class="typing-indicator" id="typingIndicator">
-            <span>Assistant is typing</span>
-            <div class="typing-dots">
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">CF</div>
+                <div>
+                    <div style="font-weight: 600; font-size: 14px; color: var(--text-primary);">CloudFlow</div>
+                    <div style="font-size: 11px; color: var(--text-secondary);">AI Support</div>
+                </div>
+            </div>
+            <div class="sidebar-content">
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Chat</div>
+                    <div class="sidebar-item active">💬 New Conversation</div>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Quick Actions</div>
+                    <div class="sidebar-item" onclick="sendMessage('How do I reset my password?')">🔑 Password Reset</div>
+                    <div class="sidebar-item" onclick="sendMessage('Why was I charged twice this month?')">💳 Billing Help</div>
+                    <div class="sidebar-item" onclick="sendMessage('How can I integrate with Slack?')">🔗 Integrations</div>
+                    <div class="sidebar-item" onclick="sendMessage('My dashboard is loading slowly')">⚡ Performance</div>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Help</div>
+                    <div class="sidebar-item">📚 Documentation</div>
+                    <div class="sidebar-item">🎥 Video Tutorials</div>
+                    <div class="sidebar-item">👥 Contact Support</div>
+                </div>
             </div>
         </div>
 
-        <div class="chat-input-container">
-            <div class="chat-input">
-                <input
-                    type="text"
-                    id="messageInput"
-                    placeholder="Type your question here..."
-                    onkeypress="handleKeyPress(event)"
-                >
-                <button onclick="sendMessage()" id="sendButton">Send</button>
+        <div class="chat-container">
+            <div class="chat-messages" id="messages">
+                <div class="welcome-section">
+                    <div class="welcome-icon">🤖</div>
+                    <div class="welcome-title">Welcome to CloudFlow AI Support</div>
+                    <div class="welcome-subtitle">I'm here to help you with any questions about your account, billing, features, or technical issues. How can I assist you today?</div>
+
+                    <div class="quick-suggestions">
+                        <div class="quick-suggestion" onclick="sendMessage('How do I reset my password?')">
+                            <div class="suggestion-icon">🔑</div>
+                            <div class="suggestion-title">Password Reset</div>
+                            <div class="suggestion-desc">Get help with login and authentication issues</div>
+                        </div>
+                        <div class="quick-suggestion" onclick="sendMessage('Why was I charged twice this month?')">
+                            <div class="suggestion-icon">💳</div>
+                            <div class="suggestion-title">Billing Questions</div>
+                            <div class="suggestion-desc">Understand your charges and subscription</div>
+                        </div>
+                        <div class="quick-suggestion" onclick="sendMessage('How can I integrate with Slack?')">
+                            <div class="suggestion-icon">🔗</div>
+                            <div class="suggestion-title">Integrations</div>
+                            <div class="suggestion-desc">Connect CloudFlow with your favorite tools</div>
+                        </div>
+                        <div class="quick-suggestion" onclick="sendMessage('My dashboard is loading slowly')">
+                            <div class="suggestion-icon">⚡</div>
+                            <div class="suggestion-title">Performance Issues</div>
+                            <div class="suggestion-desc">Troubleshoot speed and loading problems</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="typing-indicator" id="typingIndicator">
+                <span>AI is thinking</span>
+                <div class="typing-dots">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+
+            <div class="chat-input-container">
+                <div class="chat-input">
+                    <div class="input-wrapper">
+                        <input
+                            type="text"
+                            id="messageInput"
+                            placeholder="Ask me anything about CloudFlow..."
+                            onkeypress="handleKeyPress(event)"
+                        >
+                    </div>
+                    <button class="send-button" onclick="sendMessage()" id="sendButton">
+                        <span>Send</span>
+                        <span>↗</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -373,17 +668,35 @@
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${sender}`;
 
+            const avatar = sender === 'user' ? 'You' : 'AI';
+            const timestamp = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
             let messageHTML = `
+                <div class="message-avatar">${avatar.charAt(0)}</div>
                 <div class="message-content">
-                    ${content}
-                    <div class="message-meta">${new Date().toLocaleTimeString()}</div>
+                    <div class="message-bubble">${content}</div>
+                    <div class="message-meta">
+                        <span>${timestamp}</span>
             `;
 
             if (data && sender === 'assistant') {
-                // Add confidence indicator
+                // Add confidence badge
                 const confidence = Math.round(data.confidence * 100);
-                messageHTML += `<div class="message-meta">Confidence: ${confidence}%</div>`;
+                let confidenceClass = 'high';
+                if (confidence < 70) confidenceClass = 'medium';
+                if (confidence < 50) confidenceClass = 'low';
 
+                messageHTML += `<span class="confidence-badge ${confidenceClass}">${confidence}% confident</span>`;
+
+                // Add escalation notice
+                if (data.escalate) {
+                    messageHTML += `<span style="color: var(--warning); font-weight: 500;">🔄 May need human support</span>`;
+                }
+            }
+
+            messageHTML += `</div>`;
+
+            if (data && sender === 'assistant') {
                 // Add suggested actions
                 if (data.suggested_actions && data.suggested_actions.length > 0) {
                     messageHTML += `<div class="suggestions">`;
@@ -397,33 +710,29 @@
                 if (data.follow_up_questions && data.follow_up_questions.length > 0) {
                     messageHTML += `<div class="suggestions">`;
                     data.follow_up_questions.forEach(question => {
-                        messageHTML += `<span class="suggestion-chip" onclick="sendMessage('${question}')">${question}</span>`;
+                        messageHTML += `<span class="suggestion-chip" onclick="sendMessage('${question.replace(/'/g, '&apos;')}')">${question}</span>`;
                     });
                     messageHTML += `</div>`;
                 }
 
                 // Add sources
                 if (data.sources && data.sources.length > 0) {
-                    messageHTML += `<div class="sources"><strong>Sources:</strong>`;
+                    messageHTML += `<div class="sources">`;
+                    messageHTML += `<div class="sources-title">Sources</div>`;
                     data.sources.forEach(source => {
                         messageHTML += `<div class="source-item">${source.type}: ${source.title}</div>`;
                     });
                     messageHTML += `</div>`;
-                }
-
-                // Add escalation notice
-                if (data.escalate) {
-                    messageHTML += `<div class="message-meta" style="color: orange;">💬 Would you like to speak with a human agent?</div>`;
                 }
             }
 
             messageHTML += `</div>`;
             messageDiv.innerHTML = messageHTML;
 
-            // Remove welcome message if it exists
-            const welcomeMessage = messagesContainer.querySelector('.welcome-message');
-            if (welcomeMessage) {
-                welcomeMessage.remove();
+            // Remove welcome section if it exists
+            const welcomeSection = messagesContainer.querySelector('.welcome-section');
+            if (welcomeSection) {
+                welcomeSection.remove();
             }
 
             messagesContainer.appendChild(messageDiv);
