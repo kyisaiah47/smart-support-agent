@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudFlow Support Chat</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-container {
+            width: 90%;
+            max-width: 800px;
+            height: 90vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .chat-header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .chat-header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 12px 18px;
+            border-radius: 18px;
+            position: relative;
+        }
+
+        .message.user .message-content {
+            background: #667eea;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.assistant .message-content {
+            background: white;
+            color: #333;
+            border: 1px solid #e0e0e0;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-meta {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+
+        .suggestions {
+            margin-top: 10px;
+        }
+
+        .suggestion-chip {
+            display: inline-block;
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            margin: 2px;
+            cursor: pointer;
+            border: 1px solid #bbdefb;
+            transition: all 0.2s;
+        }
+
+        .suggestion-chip:hover {
+            background: #1976d2;
+            color: white;
+        }
+
+        .sources {
+            margin-top: 10px;
+            font-size: 11px;
+            opacity: 0.8;
+        }
+
+        .source-item {
+            background: #f0f0f0;
+            padding: 4px 8px;
+            border-radius: 8px;
+            margin: 2px 0;
+            display: block;
+        }
+
+        .chat-input-container {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 12px 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .chat-input input:focus {
+            border-color: #667eea;
+        }
+
+        .chat-input button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.2s;
+        }
+
+        .chat-input button:hover:not(:disabled) {
+            background: #5a6fd8;
+        }
+
+        .chat-input button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            font-style: italic;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 2px;
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: #666;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        .welcome-message {
+            text-align: center;
+            color: #666;
+            margin: 40px 0;
+        }
+
+        .quick-suggestions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .quick-suggestion {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .quick-suggestion:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .quick-suggestion h4 {
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .quick-suggestion p {
+            color: #666;
+            font-size: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .quick-suggestions {
+                grid-template-columns: 1fr;
+            }
+
+            .message-content {
+                max-width: 85%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>CloudFlow Support</h1>
+            <p>AI-powered customer support • Ask me anything!</p>
+        </div>
+
+        <div class="chat-messages" id="messages">
+            <div class="welcome-message">
+                <h3>👋 Welcome to CloudFlow Support!</h3>
+                <p>I'm here to help you with any questions about your account, billing, features, or technical issues.</p>
+
+                <div class="quick-suggestions">
+                    <div class="quick-suggestion" onclick="sendMessage('How do I reset my password?')">
+                        <h4>🔑 Password Reset</h4>
+                        <p>Get help with login issues</p>
+                    </div>
+                    <div class="quick-suggestion" onclick="sendMessage('Why was I charged twice this month?')">
+                        <h4>💳 Billing Questions</h4>
+                        <p>Understand your charges</p>
+                    </div>
+                    <div class="quick-suggestion" onclick="sendMessage('How can I integrate with Slack?')">
+                        <h4>🔗 Integrations</h4>
+                        <p>Connect your tools</p>
+                    </div>
+                    <div class="quick-suggestion" onclick="sendMessage('My dashboard is loading slowly')">
+                        <h4>🐌 Performance Issues</h4>
+                        <p>Troubleshoot problems</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="typing-indicator" id="typingIndicator">
+            <span>Assistant is typing</span>
+            <div class="typing-dots">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            </div>
+        </div>
+
+        <div class="chat-input-container">
+            <div class="chat-input">
+                <input
+                    type="text"
+                    id="messageInput"
+                    placeholder="Type your question here..."
+                    onkeypress="handleKeyPress(event)"
+                >
+                <button onclick="sendMessage()" id="sendButton">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let sessionId = null;
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        async function sendMessage(predefinedMessage = null) {
+            const input = document.getElementById('messageInput');
+            const sendButton = document.getElementById('sendButton');
+            const message = predefinedMessage || input.value.trim();
+
+            if (!message) return;
+
+            // Clear input and disable button
+            input.value = '';
+            sendButton.disabled = true;
+
+            // Add user message to chat
+            addMessage(message, 'user');
+
+            // Show typing indicator
+            showTypingIndicator();
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        session_id: sessionId,
+                        user_context: {
+                            subscription_tier: 'Pro',
+                            user_id: 'demo_user'
+                        }
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    sessionId = data.session_id;
+                    addMessage(data.response, 'assistant', data);
+                } else {
+                    addMessage('Sorry, I encountered an error. Please try again.', 'assistant');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                addMessage('Sorry, I couldn\'t connect to the server. Please try again.', 'assistant');
+            } finally {
+                hideTypingIndicator();
+                sendButton.disabled = false;
+                input.focus();
+            }
+        }
+
+        function addMessage(content, sender, data = null) {
+            const messagesContainer = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+
+            let messageHTML = `
+                <div class="message-content">
+                    ${content}
+                    <div class="message-meta">${new Date().toLocaleTimeString()}</div>
+            `;
+
+            if (data && sender === 'assistant') {
+                // Add confidence indicator
+                const confidence = Math.round(data.confidence * 100);
+                messageHTML += `<div class="message-meta">Confidence: ${confidence}%</div>`;
+
+                // Add suggested actions
+                if (data.suggested_actions && data.suggested_actions.length > 0) {
+                    messageHTML += `<div class="suggestions">`;
+                    data.suggested_actions.forEach(action => {
+                        messageHTML += `<span class="suggestion-chip">${action}</span>`;
+                    });
+                    messageHTML += `</div>`;
+                }
+
+                // Add follow-up questions
+                if (data.follow_up_questions && data.follow_up_questions.length > 0) {
+                    messageHTML += `<div class="suggestions">`;
+                    data.follow_up_questions.forEach(question => {
+                        messageHTML += `<span class="suggestion-chip" onclick="sendMessage('${question}')">${question}</span>`;
+                    });
+                    messageHTML += `</div>`;
+                }
+
+                // Add sources
+                if (data.sources && data.sources.length > 0) {
+                    messageHTML += `<div class="sources"><strong>Sources:</strong>`;
+                    data.sources.forEach(source => {
+                        messageHTML += `<div class="source-item">${source.type}: ${source.title}</div>`;
+                    });
+                    messageHTML += `</div>`;
+                }
+
+                // Add escalation notice
+                if (data.escalate) {
+                    messageHTML += `<div class="message-meta" style="color: orange;">💬 Would you like to speak with a human agent?</div>`;
+                }
+            }
+
+            messageHTML += `</div>`;
+            messageDiv.innerHTML = messageHTML;
+
+            // Remove welcome message if it exists
+            const welcomeMessage = messagesContainer.querySelector('.welcome-message');
+            if (welcomeMessage) {
+                welcomeMessage.remove();
+            }
+
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            document.getElementById('typingIndicator').style.display = 'flex';
+        }
+
+        function hideTypingIndicator() {
+            document.getElementById('typingIndicator').style.display = 'none';
+        }
+
+        // Focus input on load
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('messageInput').focus();
+        });
+    </script>
+</body>
+</html>
