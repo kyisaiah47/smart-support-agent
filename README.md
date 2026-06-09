@@ -17,3 +17,5 @@ AI-powered customer support agent using Elastic Search + Google Cloud AI for the
 
 ## Demo
 Chat interface that handles customer queries by searching knowledge base and generating contextual responses.
+
+[![Watch Demo](https://img.shields.io/badge/YouTube-Watch%20Demo-FF0000?style=flat&logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=iza39EIaGSc)
